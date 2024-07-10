@@ -25,7 +25,7 @@
 #define UART_H_FILE
 
 #define BAUD 38400
-#define BUFF_SIZE 4
+#define BUFF_SIZE 16
 
 #define UART_DDR DDRD
 #define UART_TX_N PD1

@@ -29,32 +29,13 @@
 uint16_t buff[BUFF_SIZE];
 uint8_t buff_i=0, buff_n=0;
 
-void uart_setup(void)
-{
-	UBRRH = UBRRH_VALUE;
-	UBRRL = UBRRL_VALUE;
-#if USE_2X
-	UCSRA |= (1 << U2X); // Use 2x prescaler if needed
-#else
-	UCSRA &= ~(1 << U2X);
-#endif
-	UCSRB |= _BV(TXEN) | _BV(TXCIE);
-    UART_DDR |= _BV(UART_TX_N);
-}
-
-static void send_byte(uint8_t val)
-{
-    loop_until_bit_is_set(UCSRA, UDRE);
-    UDR = val;
-}
-
-static void buff_push_byte(uint8_t val)
+static void buff_push(uint8_t val)
 {
     buff[buff_n] = val;
     buff_n = (buff_n+1)%BUFF_SIZE;
 }
 
-static uint8_t buff_pop_byte()
+static uint8_t buff_pop()
 {
     uint8_t val = buff[buff_i];
     buff_i = (buff_i+1)%BUFF_SIZE;
@@ -66,6 +47,24 @@ static uint8_t buff_is_empty()
     return (buff_i==buff_n);
 }
 
+static void send_byte(uint8_t val)
+{
+    loop_until_bit_is_set(UCSRA, UDRE);
+    UDR = val;
+}
+
+void uart_setup(void)
+{
+	UBRRH = UBRRH_VALUE;
+	UBRRL = UBRRL_VALUE;
+#if USE_2X
+	UCSRA |= (1 << U2X); // Use 2x prescaler if needed
+#else
+	UCSRA &= ~(1 << U2X);
+#endif
+	UCSRB |= _BV(TXEN) | _BV(TXCIE);
+}
+
 void uart_send_byte(uint8_t val)
 {
     if(bit_is_set(UCSRA, UDRE)&&buff_is_empty())
@@ -74,7 +73,7 @@ void uart_send_byte(uint8_t val)
     }
     else
     {
-        buff_push_byte(val);
+        buff_push(val);
     }
 }
 
@@ -84,13 +83,13 @@ void uart_send_word(uint16_t val)
     high = (val>>8)&0xFF;
     low = val&0xFF;
     uart_send_byte(high);
-    buff_push_byte(low);
+    buff_push(low);
 }
 
 void uart_tx_int()
 {
     if(!buff_is_empty())
     {
-        send_byte(buff_pop_byte());
+        send_byte(buff_pop());
     }
 }

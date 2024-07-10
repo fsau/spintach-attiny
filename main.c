@@ -116,7 +116,7 @@ int main(void)
 
         if((button1>1)&&(button2>1))
         {
-            if(button1<=SW_DELAY_FAST)
+            if((button1<=SW_DELAY_FAST)||(button2<=SW_DELAY_FAST))
             {
                 state^=1;
                 eeprom_write_byte(&state_save,state&1);

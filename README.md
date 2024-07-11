@@ -12,7 +12,7 @@ Just running `make` with the avr toolchain installed should generate the `.hex` 
 
 <p align="center">
 <img src="sch/sch.png" width="600"><br>
-<sub><sup>Current schematic and pinout used</sub></sup>
+<sub><sup>Current schematic and pinout used in this project. Resistors to LCD can be despised.</sub></sup>
 </p>
 
 ## TODOs
